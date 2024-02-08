@@ -10,8 +10,42 @@ test_csv = pd.read_csv("test.csv", index_col=0)
 # for label in train_csv:
 #         print(train_csv[label].isna().sum())    # 결측치 없음을 확인
 
-# print(train_csv.head)
+class_label = ['Gender','family_history_with_overweight','FAVC','CAEC','SMOKE','SCC','CALC','MTRANS','NObeyesdad']
+
+''' # train csv 라벨들 확인
+for label in train_csv:
+        if label in class_label:
+                print(label ,np.unique(train_csv[label], return_counts=True))
+Gender (array(['Female', 'Male'], dtype=object), array([10422, 10336], dtype=int64))
+family_history_with_overweight (array(['no', 'yes'], dtype=object), array([ 3744, 17014], dtype=int64))
+FAVC (array(['no', 'yes'], dtype=object), array([ 1776, 18982], dtype=int64))
+CAEC (array(['Always', 'Frequently', 'Sometimes', 'no'], dtype=object), array([  478,  2472, 17529,   279], dtype=int64))
+SMOKE (array(['no', 'yes'], dtype=object), array([20513,   245], dtype=int64))
+SCC (array(['no', 'yes'], dtype=object), array([20071,   687], dtype=int64))
+CALC (array(['Frequently', 'Sometimes', 'no'], dtype=object), array([  529, 15066,  5163], dtype=int64))
+MTRANS (array(['Automobile', 'Bike', 'Motorbike', 'Public_Transportation',
+       'Walking'], dtype=object), array([ 3534,    32,    38, 16687,   467], dtype=int64))
+NObeyesdad (array(['Insufficient_Weight', 'Normal_Weight', 'Obesity_Type_I',
+       'Obesity_Type_II', 'Obesity_Type_III', 'Overweight_Level_I',
+       'Overweight_Level_II'], dtype=object), array([2523, 3082, 2910, 3248, 4046, 2427, 2522], dtype=int64))
 '''
+''' # test csv 라벨들 확인
+for label in test_csv:
+        if label in class_label:
+                print(label, np.unique(test_csv[label], return_counts=True))
+Gender (array(['Female', 'Male'], dtype=object), array([6965, 6875], dtype=int64))
+family_history_with_overweight (array(['no', 'yes'], dtype=object), array([ 2456, 11384], dtype=int64))
+FAVC (array(['no', 'yes'], dtype=object), array([ 1257, 12583], dtype=int64))
+CAEC (array(['Always', 'Frequently', 'Sometimes', 'no'], dtype=object), array([  359,  1617, 11689,   175], dtype=int64))
+SMOKE (array(['no', 'yes'], dtype=object), array([13660,   180], dtype=int64))
+SCC (array(['no', 'yes'], dtype=object), array([13376,   464], dtype=int64))
+CALC (array(['Always', 'Frequently', 'Sometimes', 'no'], dtype=object), array([   2,  346, 9979, 3513], dtype=int64))
+MTRANS (array(['Automobile', 'Bike', 'Motorbike', 'Public_Transportation',
+       'Walking'], dtype=object), array([ 2405,    25,    19, 11111,   280], dtype=int64))
+test_csv.loc[test_csv['CALC'] == 'Always', 'CALC'] = 'Frequently'
+'''
+# print(train_csv.head)
+''' # train head 확인
 <bound method NDFrame.head of        
         Gender      Age    Height      Weight   family_history_with_overweight FAVC      FCVC     NCP        CAEC   SMOKE    CH2O   SCC    FAF       TUE       CALC                 MTRANS           NObeyesdad
 id
@@ -54,7 +88,7 @@ test_csv['MTRANS'] = x_labelEncoder.fit_transform(test_csv['MTRANS'])
 y_labelEncoder = LabelEncoder()
 train_csv['NObeyesdad'] = y_labelEncoder.fit_transform(train_csv['NObeyesdad'])
 # print(train_csv.head)
-'''
+''' # 라벨 인코딩 후 train.head 확인
 <bound method NDFrame.head of        
        Gender     Age      Height     Weight   family_history_with_overweight    FAVC    CVC       NCP     CAEC  SMOKE   CH2O    SCC    FAF       TUE      CALC   MTRANS    NObeyesdad
 id
@@ -71,11 +105,53 @@ id
 20757       1  26.680376  1.816547  118.134898                               1     1  3.000000  3.000000     2      0  2.003563    0  0.684487  0.713823     1       3           3
 '''
 
-x = train_csv.drop(['NObeyesdad'], axis=1)
+""" # P 검정
+import scipy.stats as stats
+for label in train_csv:
+    print(label," ",stats.pearsonr(train_csv['NObeyesdad'],train_csv[label]))
+Gender   PearsonRResult(statistic=0.046574912033978184, pvalue=1.8990220650683642e-11)
+Age   PearsonRResult(statistic=0.2830183712239907, pvalue=0.0)
+Height   PearsonRResult(statistic=0.060785550400480136, pvalue=1.8621467518362792e-18)
+Weight   PearsonRResult(statistic=0.43182097207728903, pvalue=0.0)
+family_history_with_overweight   PearsonRResult(statistic=0.32132484319938587, pvalue=0.0)
+        FAVC   PearsonRResult(statistic=0.010176246176913503, pvalue=0.14261934009881228)
+FCVC   PearsonRResult(statistic=0.0410763864808035, pvalue=3.2139644150763383e-09)
+NCP   PearsonRResult(statistic=-0.09115416942846906, pvalue=1.4953264119959517e-39)
+CAEC   PearsonRResult(statistic=0.297419757072015, pvalue=0.0)
+        SMOKE   PearsonRResult(statistic=-0.0013927633524938529, pvalue=0.84097046043243)
+CH2O   PearsonRResult(statistic=0.18709958001025073, pvalue=7.344610346043163e-163)
+SCC   PearsonRResult(statistic=-0.06517135385355988, pvalue=5.504265380370881e-21)
+FAF   PearsonRResult(statistic=-0.09664292513984239, pvalue=2.9003365419591887e-44)
+TUE   PearsonRResult(statistic=-0.07603955730067295, pvalue=5.284478962295593e-28)
+CALC   PearsonRResult(statistic=-0.16849742485140495, pvalue=5.0277297570113e-132)
+MTRANS   PearsonRResult(statistic=-0.07743006081693204, pvalue=5.594245339542871e-29)
+NObeyesdad   PearsonRResult(statistic=1.0, pvalue=0.0) """
+
+x = train_csv.drop(['NObeyesdad','FAVC','SMOKE'], axis=1) # P검정에 의거하여 FAVC와 SMOKE 제거
 y = train_csv['NObeyesdad']
 
-scaler = MinMaxScaler()
+'''# 최대 최소 1분위 3분위 구하기
+for label in x:         
+        if label in class_label:
+                continue
+        print(f"{label:30}: max={max(x[label]):<10}  min={min(x[label]):<10}  q1={x[label].quantile(0.25):<10}  q3={x[label].quantile(0.75):<10}")
+Age                           : max=61.0        min=14.0        q1=20.0        q3=26.0
+Height                        : max=1.975663    min=1.45        q1=1.631856    q3=1.762887
+Weight                        : max=165.057269  min=39.0        q1=66.0        q3=111.600553
+FCVC                          : max=3.0         min=1.0         q1=2.0         q3=3.0
+NCP                           : max=4.0         min=1.0         q1=3.0         q3=3.0
+CH2O                          : max=3.0         min=1.0         q1=1.792022    q3=2.549617
+FAF                           : max=3.0         min=0.0         q1=0.008013    q3=1.587406
+TUE                           : max=2.0         min=0.0         q1=0.0         q3=1.0
+'''
+
+
+
+# scaler = MinMaxScaler()
+# scaler = MaxAbsScaler()
+scaler = StandardScaler()
+# scaler = RobustScaler()
 x = scaler.fit_transform(x)
 test_csv = scaler.fit_transform(test_csv)
 
-x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.8, random_state=333)
+x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.8, random_state=333, stratify=y)
