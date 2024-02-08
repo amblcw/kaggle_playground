@@ -1,12 +1,15 @@
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, MinMaxScaler, MaxAbsScaler, StandardScaler, RobustScaler
+from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
 
 train_csv = pd.read_csv("train.csv", index_col=0)
 test_csv = pd.read_csv("test.csv", index_col=0)
-submit_csv = pd.read_csv("sample_submission.csv")
 
 # print(train_csv.shape, test_csv.shape, submit_csv.shape)    # (20758, 17) (13840, 16) (13840, 2)
+# for label in train_csv:
+#         print(train_csv[label].isna().sum())    # 결측치 없음을 확인
+
 # print(train_csv.head)
 '''
 <bound method NDFrame.head of        
@@ -24,7 +27,7 @@ id
 20756    Male  33.852953  1.700000   83.520113                            yes  yes  2.671238  1.971472   Sometimes    no  2.144838  no  0.000000  0.973834         no             Automobile  Overweight_Level_II
 20757    Male  26.680376  1.816547  118.134898                            yes  yes  3.000000  3.000000   Sometimes    no  2.003563  no  0.684487  0.713823  Sometimes  Public_Transportation      Obesity_Type_II
 '''
-print(train_csv.columns)
+# print(train_csv.columns)
 # ['Gender', 'Age', 'Height', 'Weight', 'family_history_with_overweight',
 #        'FAVC', 'FCVC', 'NCP', 'CAEC', 'SMOKE', 'CH2O', 'SCC', 'FAF', 'TUE',
 #        'CALC', 'MTRANS', 'NObeyesdad']
@@ -37,6 +40,16 @@ train_csv['SMOKE'] = x_labelEncoder.fit_transform(train_csv['SMOKE'])
 train_csv['SCC'] = x_labelEncoder.fit_transform(train_csv['SCC'])
 train_csv['CALC'] = x_labelEncoder.fit_transform(train_csv['CALC'])
 train_csv['MTRANS'] = x_labelEncoder.fit_transform(train_csv['MTRANS'])
+
+x_labelEncoder = LabelEncoder()
+test_csv['Gender'] = x_labelEncoder.fit_transform(test_csv['Gender'])
+test_csv['family_history_with_overweight'] = x_labelEncoder.fit_transform(test_csv['family_history_with_overweight'])
+test_csv['FAVC'] = x_labelEncoder.fit_transform(test_csv['FAVC'])
+test_csv['CAEC'] = x_labelEncoder.fit_transform(test_csv['CAEC'])
+test_csv['SMOKE'] = x_labelEncoder.fit_transform(test_csv['SMOKE'])
+test_csv['SCC'] = x_labelEncoder.fit_transform(test_csv['SCC'])
+test_csv['CALC'] = x_labelEncoder.fit_transform(test_csv['CALC'])
+test_csv['MTRANS'] = x_labelEncoder.fit_transform(test_csv['MTRANS'])
 
 y_labelEncoder = LabelEncoder()
 train_csv['NObeyesdad'] = y_labelEncoder.fit_transform(train_csv['NObeyesdad'])
@@ -57,3 +70,12 @@ id
 20756       1  33.852953  1.700000   83.520113                               1     1  2.671238  1.971472     2      0  2.144838    0  0.000000  0.973834     2       0           6
 20757       1  26.680376  1.816547  118.134898                               1     1  3.000000  3.000000     2      0  2.003563    0  0.684487  0.713823     1       3           3
 '''
+
+x = train_csv.drop(['NObeyesdad'], axis=1)
+y = train_csv['NObeyesdad']
+
+scaler = MinMaxScaler()
+x = scaler.fit_transform(x)
+test_csv = scaler.fit_transform(test_csv)
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.8, random_state=333)
