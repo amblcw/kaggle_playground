@@ -21,6 +21,8 @@ submit_csv.to_csv(f"./submit/acc_{acc:.6f}.csv",index=False)
 print(param)
 print("ACC: ",acc)
 
+
+
 # n_estimators=1000, learning_rate=0.2, max_depth=4, random_state=32
 # ACC:  0.9041425818882466
 
@@ -29,3 +31,6 @@ print("ACC: ",acc)
 
 # {'iterations': 1000, 'depth': 5, 'learning_rate': 0.1}
 # ACC:  0.9111271676300579
+
+# {'iterations': 1500, 'depth': 5, 'learning_rate': 0.1}
+# ACC:  0.9123314065510597

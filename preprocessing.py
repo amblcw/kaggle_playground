@@ -2,6 +2,8 @@ from sklearn.preprocessing import LabelEncoder, OneHotEncoder, MinMaxScaler, Max
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
+import warnings
+warnings.filterwarnings('ignore')
 
 train_csv = pd.read_csv("train.csv", index_col=0)
 test_csv = pd.read_csv("test.csv", index_col=0)
@@ -105,6 +107,7 @@ id
 20757       1  26.680376  1.816547  118.134898                               1     1  3.000000  3.000000     2      0  2.003563    0  0.684487  0.713823     1       3           3
 '''
 
+
 """ # P 검정
 import scipy.stats as stats
 for label in train_csv:
@@ -126,6 +129,9 @@ TUE   PearsonRResult(statistic=-0.07603955730067295, pvalue=5.284478962295593e-2
 CALC   PearsonRResult(statistic=-0.16849742485140495, pvalue=5.0277297570113e-132)
 MTRANS   PearsonRResult(statistic=-0.07743006081693204, pvalue=5.594245339542871e-29)
 NObeyesdad   PearsonRResult(statistic=1.0, pvalue=0.0) """
+
+# train_csv['BMI'] = train_csv['Weight'] / (train_csv['Height']*train_csv['Height'])
+# test_csv['BMI'] = test_csv['Weight'] / (test_csv['Height']*test_csv['Height'])
 
 x = train_csv.drop(['NObeyesdad','FAVC','SMOKE'], axis=1) # P검정에 의거하여 FAVC와 SMOKE 제거
 y = train_csv['NObeyesdad']
@@ -155,3 +161,5 @@ x = scaler.fit_transform(x)
 test_csv = scaler.fit_transform(test_csv)
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.8, random_state=333, stratify=y)
+
+print(x_train.shape, x_test.shape, y_train.shape, y_test.shape)
