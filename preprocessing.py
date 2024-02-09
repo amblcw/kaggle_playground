@@ -133,7 +133,7 @@ NObeyesdad   PearsonRResult(statistic=1.0, pvalue=0.0) """
 # train_csv['BMI'] = train_csv['Weight'] / (train_csv['Height']*train_csv['Height'])
 # test_csv['BMI'] = test_csv['Weight'] / (test_csv['Height']*test_csv['Height'])
 
-x = train_csv.drop(['NObeyesdad','FAVC','SMOKE'], axis=1) # P검정에 의거하여 FAVC와 SMOKE 제거
+x = train_csv.drop(['NObeyesdad'], axis=1) # P검정에 의거하여 FAVC와 SMOKE 제거
 y = train_csv['NObeyesdad']
 
 '''# 최대 최소 1분위 3분위 구하기

@@ -3,14 +3,15 @@ from sklearn.utils import all_estimators
 from xgboost import XGBClassifier
 from catboost import CatBoostClassifier
 import pandas as pd
+from model import y_submit, acc
 
-param = {'iterations': 1500, 'depth': 5, 'learning_rate': 0.1}
-model = CatBoostClassifier(**param)
-model.fit(x_train,y_train)
+# param = {'iterations': 1000, 'depth': 4, 'learning_rate': 0.07}
+# model = CatBoostClassifier(**param)
+# model.fit(x_train,y_train)
 
-acc = model.score(x_test,y_test)
-y_submit = model.predict(test_csv)
-y_submit = y_labelEncoder.inverse_transform(y_submit)
+# acc = model.score(x_test,y_test)
+# y_submit = model.predict(test_csv)
+# y_submit = y_labelEncoder.inverse_transform(y_submit)
 
 submit_csv = pd.read_csv("sample_submission.csv")
 print(submit_csv.columns)   # ['id', 'NObeyesdad']
@@ -18,7 +19,7 @@ submit_csv['NObeyesdad'] = y_submit
 
 submit_csv.to_csv(f"./submit/acc_{acc:.6f}.csv",index=False)
 
-print(param)
+# print(param)
 print("ACC: ",acc)
 
 

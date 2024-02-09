@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score
 import pandas as pd
 from sklearn.model_selection import GridSearchCV, StratifiedKFold, cross_val_predict
 
-param = {'iterations': [1000,1500,2000,2500], 'depth': [4,5,6], 'learning_rate': [0.01,0.05,0.07,0.10]}
+param = {'iterations': [900], 'depth': [4], 'learning_rate': [0.06]}
 
 kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=333)
 
@@ -22,3 +22,8 @@ print("최적의 매개변수: ", model.best_estimator_)
 print("최적의 파라미터: ", model.best_params_)
 print(param)
 print("ACC: ",acc)
+
+# 최적의 매개변수:  <catboost.core.CatBoostClassifier object at 0x000001FEBBDC3EE0>
+# 최적의 파라미터:  {'depth': 4, 'iterations': 1000, 'learning_rate': 0.07}
+# {'iterations': [1000, 1500, 2000], 'depth': [4, 5, 6], 'learning_rate': [0.01, 0.05, 0.07, 0.1]}
+# ACC:  0.9065510597302505
