@@ -4,6 +4,7 @@ from xgboost import XGBClassifier
 from catboost import CatBoostClassifier
 import pandas as pd
 from model import y_submit, acc
+import datetime
 
 # param = {'iterations': 1000, 'depth': 4, 'learning_rate': 0.07}
 # model = CatBoostClassifier(**param)
@@ -17,7 +18,8 @@ submit_csv = pd.read_csv("sample_submission.csv")
 print(submit_csv.columns)   # ['id', 'NObeyesdad']
 submit_csv['NObeyesdad'] = y_submit
 
-submit_csv.to_csv(f"./submit/acc_{acc:.6f}.csv",index=False)
+dt = datetime.datetime.now()
+submit_csv.to_csv(f"./submit/{dt.day}acc_{acc:.6f}.csv",index=False)
 
 # print(param)
 print("ACC: ",acc)
@@ -35,3 +37,26 @@ print("ACC: ",acc)
 
 # {'iterations': 1500, 'depth': 5, 'learning_rate': 0.1}
 # ACC:  0.9123314065510597
+
+# 열 제거 안함
+# 최적의 파라미터:  {'depth': 4, 'iterations': 900, 'learning_rate': 0.06, 'task_type': 'GPU'}
+# {'iterations': [900], 'depth': [4], 'learning_rate': [0.06], 'task_type': ['GPU']}
+# ACC:  0.9132947976878613
+# Index(['id', 'NObeyesdad'], dtype='object')
+# ACC:  0.9132947976878613
+# 실제 ACC: 0.8945
+
+# FAVC만 제거
+# 최적의 파라미터:  {'depth': 4, 'iterations': 900, 'learning_rate': 0.06, 'task_type': 'GPU'}
+# {'iterations': [900], 'depth': [4], 'learning_rate': [0.06], 'task_type': ['GPU']}
+# ACC:  0.9096820809248555
+# Index(['id', 'NObeyesdad'], dtype='object')
+# ACC:  0.9096820809248555
+# 실제 ACC: 0.444
+
+# SMOKE만 제거
+# 최적의 파라미터:  {'depth': 4, 'iterations': 900, 'learning_rate': 0.06, 'task_type': 'GPU'}
+# {'iterations': [900], 'depth': [4], 'learning_rate': [0.06], 'task_type': ['GPU']}
+# ACC:  0.9135356454720617
+# Index(['id', 'NObeyesdad'], dtype='object')
+# ACC:  0.9135356454720617

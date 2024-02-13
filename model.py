@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score
 import pandas as pd
 from sklearn.model_selection import GridSearchCV, StratifiedKFold, cross_val_predict
 
-param = {'iterations': [900], 'depth': [4], 'learning_rate': [0.06]}
+param = {'iterations': [900], 'depth': [4], 'learning_rate': [0.06], 'task_type' : ['GPU']}
 
 kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=333)
 
