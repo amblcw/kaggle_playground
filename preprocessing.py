@@ -130,9 +130,11 @@ CALC   PearsonRResult(statistic=-0.16849742485140495, pvalue=5.0277297570113e-13
 MTRANS   PearsonRResult(statistic=-0.07743006081693204, pvalue=5.594245339542871e-29)
 NObeyesdad   PearsonRResult(statistic=1.0, pvalue=0.0) """
 
+''' BMI 컬럼 추가 '''
 train_csv['BMI'] = train_csv['Weight'] / (train_csv['Height']*train_csv['Height'])
 test_csv['BMI'] = test_csv['Weight'] / (test_csv['Height']*test_csv['Height'])
 
+''' 이상치 제거 '''
 age_q1 = train_csv['Age'].quantile(0.25)
 age_q3 = train_csv['Age'].quantile(0.75)
 age_gap = (age_q3 - age_q1 ) * 1.5
@@ -167,16 +169,16 @@ FAF                           : max=3.0         min=0.0         q1=0.008013    q
 TUE                           : max=2.0         min=0.0         q1=0.0         q3=1.0
 '''
 
-# scaler = MinMaxScaler()
-# scaler = MaxAbsScaler()
-# scaler = StandardScaler()
-# scaler = RobustScaler()
-# x = scaler.fit_transform(x)
-# test_csv = scaler.fit_transform(test_csv)
-
 scaler = MinMaxScaler()
 # scaler = MaxAbsScaler()
 # scaler = StandardScaler()
+# scaler = RobustScaler()
+x = scaler.fit_transform(x)
+test_csv = scaler.fit_transform(test_csv)
+
+# scaler = MinMaxScaler()
+# scaler = MaxAbsScaler()
+scaler = StandardScaler()
 # scaler = RobustScaler()
 x = scaler.fit_transform(x)
 test_csv = scaler.fit_transform(test_csv)

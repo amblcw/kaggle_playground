@@ -3,13 +3,14 @@ from xgboost import XGBClassifier
 from catboost import CatBoostClassifier
 from sklearn.metrics import accuracy_score
 import pandas as pd
-from sklearn.model_selection import GridSearchCV, StratifiedKFold, cross_val_predict
+from sklearn.model_selection import GridSearchCV, StratifiedKFold, cross_val_predict, RandomizedSearchCV
 
 param = {'iterations': [900], 'depth': [4], 'learning_rate': [0.06], 'task_type' : ['GPU']}
+# param = {'iterations': [500,900, 1500, 2500], 'depth': [4], 'learning_rate': [0.06], 'task_type' : ['GPU']}
 
 kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=333)
 
-model = GridSearchCV(CatBoostClassifier(), param, cv=kfold, verbose=1, refit=True, n_jobs=-1)
+model = GridSearchCV(CatBoostClassifier(), param, cv=kfold, verbose=1, refit=False, n_jobs=-1)
 model.fit(x_train,y_train)
 
 y_pre_best = model.best_estimator_.predict(x_test)
