@@ -1,7 +1,7 @@
 from preprocessing import x_train, x_test, y_train, y_test, test_csv, y_labelEncoder
 from xgboost import XGBClassifier
 from catboost import CatBoostClassifier
-from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
 from sklearn.metrics import accuracy_score
 import pandas as pd
 from sklearn.model_selection import GridSearchCV, StratifiedKFold, cross_val_predict, RandomizedSearchCV
@@ -25,8 +25,7 @@ print("최적의 매개변수: ", model.best_estimator_)
 print("최적의 파라미터: ", model.best_params_)
 print(param)
 print("ACC: ",acc) """
-
-def objective(trial):
+def objectiveCAT(trial):
     params = {
         'iterations': trial.suggest_int('iterations', 100, 1000),
         'learning_rate': trial.suggest_loguniform('learning_rate', 0.01, 0.3),
@@ -41,6 +40,27 @@ def objective(trial):
 
     # Train the model
     model.fit(x_train, y_train, verbose=False)
+
+    # Make predictions on the validation set
+    val_preds = model.predict(x_test)
+
+    # Calculate accuracy on the validation set
+    accuracy = accuracy_score(y_test, val_preds)
+
+    return accuracy
+
+def objectiveLGBM(trial):
+    params = {
+        'n_estimators': trial.suggest_int('n_estimators', 50, 1000),
+        'learning_rate': trial.suggest_loguniform('learning_rate', 0.01, 0.3),
+        'max_depth': -1,
+        'min_data_in_leaf': trial.suggest_int('min_data_in_leaf', 10, 40),
+    }
+
+    model = LGBMClassifier(**params)
+
+    # Train the model
+    model.fit(x_train, y_train)
 
     # Make predictions on the validation set
     val_preds = model.predict(x_test)
@@ -76,14 +96,14 @@ def objectiveXGB(trial):
     
     return score
 
-# study = optuna.create_study(direction='maximize')
-# study.optimize(objectiveXGB, n_trials=100)
+study = optuna.create_study(direction='maximize')
+study.optimize(objectiveLGBM, n_trials=100)
 
-# best_params = study.best_params
-# print(best_params)
+best_params = study.best_params
+print(best_params)
 
-# optuna.visualization.plot_param_importances(study)      # 파라미터 중요도 확인 그래프
-# optuna.visualization.plot_optimization_history(study)   # 최적화 과정 시각화
+optuna.visualization.plot_param_importances(study)      # 파라미터 중요도 확인 그래프
+optuna.visualization.plot_optimization_history(study)   # 최적화 과정 시각화
 
 # params = {'iterations': 452, 'learning_rate': 0.18947052287744456, 'depth': 6, 'l2_leaf_reg': 6.8398928223584035, 'border_count': 243} # catboost, always 처리 안함
 params = {'iterations': 777, 'learning_rate': 0.10152509183335467, 'depth': 6, 'l2_leaf_reg': 1.4112760375644173, 'border_count': 154} # catboost, always 처리
