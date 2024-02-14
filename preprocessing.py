@@ -44,8 +44,8 @@ SCC (array(['no', 'yes'], dtype=object), array([13376,   464], dtype=int64))
 CALC (array(['Always', 'Frequently', 'Sometimes', 'no'], dtype=object), array([   2,  346, 9979, 3513], dtype=int64))
 MTRANS (array(['Automobile', 'Bike', 'Motorbike', 'Public_Transportation',
        'Walking'], dtype=object), array([ 2405,    25,    19, 11111,   280], dtype=int64))
-test_csv.loc[test_csv['CALC'] == 'Always', 'CALC'] = 'Frequently'
 '''
+test_csv.loc[test_csv['CALC'] == 'Always', 'CALC'] = 'Frequently'
 # print(train_csv.head)
 ''' # train head 확인
 <bound method NDFrame.head of        
