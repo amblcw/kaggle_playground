@@ -60,3 +60,6 @@ print("ACC: ",acc)
 # ACC:  0.9135356454720617
 # Index(['id', 'NObeyesdad'], dtype='object')
 # ACC:  0.9135356454720617
+
+# CatBoostClassifier, SCC 제거
+# ACC:  0.9146558293116587

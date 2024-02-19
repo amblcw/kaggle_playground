@@ -13,6 +13,35 @@ test_csv = pd.read_csv("test.csv", index_col=0)
 #         print(train_csv[label].isna().sum())    # 결측치 없음을 확인
 
 class_label = ['Gender','family_history_with_overweight','FAVC','CAEC','SMOKE','SCC','CALC','MTRANS','NObeyesdad']
+'''
+NObeesdad (비만 수준) - 불충분한 체중, 정상 체중, 과체중 수준 I, 과체중 수준 II, 비만 유형 I, 비만 유형 II 및 비만 유형 III의 값을 사용하여 데이터를 분류할 수 있습니다.
+
+FAVC - 열량이 높은 음식을 자주 섭취함
+FCVC - 채소 섭취 빈도
+NCP - 하루 식사 횟수
+CAEC - 식사 간 음식 섭취
+CH20 - 1일 물 섭취량
+CALC - 알코올 섭취량
+
+신체 상태와 관련된 속성은 아래와 같습니다.
+SCC - 칼로리 소모량 모니터링
+FAF - 신체활동 빈도
+TUE - 기술 기기 사용 시간
+MTRANS - 사용되는 교통수단
+
+FAVC - Frequent consumption of high caloric food
+FCVC- Frequency of consumption of vegetables
+NCP - Number of main meals
+CAEC- Consumption of food between meals
+CH20 - Consumption of water daily
+CALC - Consumption of alcohol
+
+The attributes related with the physical condition are below
+SCC - Calories consumption monitoring
+FAF - Physical activity frequency
+TUE - Time using technology devices
+MTRANS - Transportation used
+'''
 
 ''' # train csv 라벨들 확인
 for label in train_csv:
@@ -107,6 +136,9 @@ id
 20757       1  26.680376  1.816547  118.134898                               1     1  3.000000  3.000000     2      0  2.003563    0  0.684487  0.713823     1       3           3
 '''
 
+''' BMI 컬럼 추가 '''
+train_csv['BMI'] = train_csv['Weight'] / (train_csv['Height']*train_csv['Height'])
+test_csv['BMI'] = test_csv['Weight'] / (test_csv['Height']*test_csv['Height'])
 
 """ # P 검정
 import scipy.stats as stats
@@ -128,11 +160,17 @@ FAF   PearsonRResult(statistic=-0.09664292513984239, pvalue=2.9003365419591887e-
 TUE   PearsonRResult(statistic=-0.07603955730067295, pvalue=5.284478962295593e-28)
 CALC   PearsonRResult(statistic=-0.16849742485140495, pvalue=5.0277297570113e-132)
 MTRANS   PearsonRResult(statistic=-0.07743006081693204, pvalue=5.594245339542871e-29)
-NObeyesdad   PearsonRResult(statistic=1.0, pvalue=0.0) """
+NObeyesdad   PearsonRResult(statistic=1.0, pvalue=0.0)
+BMI   PearsonRResult(statistic=0.46389386563867047, pvalue=0.0) 
+"""
 
-''' BMI 컬럼 추가 '''
-train_csv['BMI'] = train_csv['Weight'] / (train_csv['Height']*train_csv['Height'])
-test_csv['BMI'] = test_csv['Weight'] / (test_csv['Height']*test_csv['Height'])
+''' 상관계수 체크 
+print("상관계수 체크 \n", train_csv.corr())
+import matplotlib.pyplot as plt
+import seaborn as sns 
+sns.heatmap(data=train_csv.corr(), annot=True, square=True)
+plt.show()
+'''
 
 ''' 이상치 제거 '''
 age_q1 = train_csv['Age'].quantile(0.25)
@@ -151,8 +189,9 @@ weight_upper = weight_q3 + weight_gap
 train_csv = train_csv[train_csv['Weight']>=weight_under]
 train_csv = train_csv[train_csv['Weight']<=weight_upper]
 
-x = train_csv.drop(['NObeyesdad'], axis=1) # P검정에 의거하여 FAVC와 SMOKE 제거
+x = train_csv.drop(['NObeyesdad','SCC'], axis=1) # P검정에 의거하여 FAVC와 SMOKE 제거
 y = train_csv['NObeyesdad']
+test_csv = test_csv.drop(['SCC'], axis=1)
 
 '''# 최대 최소 1분위 3분위 구하기
 for label in x:         
@@ -169,19 +208,26 @@ FAF                           : max=3.0         min=0.0         q1=0.008013    q
 TUE                           : max=2.0         min=0.0         q1=0.0         q3=1.0
 '''
 
-scaler = MinMaxScaler()
-# scaler = MaxAbsScaler()
-# scaler = StandardScaler()
-# scaler = RobustScaler()
-x = scaler.fit_transform(x)
-test_csv = scaler.fit_transform(test_csv)
-
 # scaler = MinMaxScaler()
-# scaler = MaxAbsScaler()
-scaler = StandardScaler()
-# scaler = RobustScaler()
-x = scaler.fit_transform(x)
-test_csv = scaler.fit_transform(test_csv)
+# # scaler = MaxAbsScaler()
+# # scaler = StandardScaler()
+# # scaler = RobustScaler()
+# x = scaler.fit_transform(x)
+# test_csv = scaler.fit_transform(test_csv)
+
+# # scaler = MinMaxScaler()
+# # scaler = MaxAbsScaler()
+# scaler = StandardScaler()
+# # scaler = RobustScaler()
+# x = scaler.fit_transform(x)
+# test_csv = scaler.fit_transform(test_csv)
+
+
+# from sklearn.decomposition import PCA # 구려...
+# print(x.shape)
+# pca = PCA(n_components=x.shape[1]-1).fit(x)
+# x = pca.transform(x)
+# test_csv = pca.transform(test_csv)
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.8, random_state=333, stratify=y)
 
